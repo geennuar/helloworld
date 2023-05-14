@@ -1,0 +1,42 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworld
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-redirect-https@kubernetescrd
+spec:
+  rules:
+    - host: k3s.lendingbook.cn
+      http:
+        paths:
+          - path: /helloworld
+            pathType: Exact
+            backend:
+              service:
+                name: helloworld
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helloworldhttps
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: letsencrypt
+    traefik.ingress.kubernetes.io/router.tls.domains.0.main: k3s.lendingbook.cn
+spec:
+  rules:
+    - host: k3s.lendingbook.cn
+      http:
+        paths:
+          - path: /helloworld
+            pathType: Exact
+            backend:
+              service:
+                name: helloworld
+                port:
+                  number: 8080
